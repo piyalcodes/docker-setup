@@ -1,0 +1,15 @@
+FROM php:7.1-fpm
+RUN apt-get update && apt-get install -y libmcrypt-dev gnupg git zip unzip \
+	mysql-client libmagickwand-dev --no-install-recommends \
+	&& pecl install imagick \
+	&& docker-php-ext-enable imagick \
+	&& docker-php-ext-install mcrypt pdo_mysql
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs build-essential
+RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer
+ #Copy MYSQL configuration into the image
+#COPY ./docker/conf/my.cnf /etc/my.cnf
+ ARG WORKING_DIR
+# Copy the working dir to the image's web root
+COPY ./ /var/www
+WORKDIR /var/www
